@@ -1,34 +1,5 @@
 <script setup>
-const tasks = {
-  htmlAndCss: [
-    {
-      id: 1,
-      date: "2025/04/28",
-      title: "切版任務 Day1 - HTML 標籤元素、CSS 判斷",
-      link: "https://hackmd.io/x-Xk5ZwyRPGZhVqYISPYZA",
-    },
-    {
-      id: 2,
-      date: "2025/04/29",
-      title: "切版任務 Day2 - 圖片處理技巧",
-      link: "https://hackmd.io/iZ6WaLpzS52vsQOV3xKk_w",
-    },
-  ],
-  javaScript: [
-    {
-      id: 1,
-      date: "2025/04/28",
-      title: "JS 任務 Day1 - 字串、數字相加",
-      link: "https://hackmd.io/tOqQkcxzQRGaS4HRS-FsiQ",
-    },
-    {
-      id: 2,
-      date: "2025/04/29",
-      title: "JS 任務 Day2 - 數字處理",
-      link: "https://hackmd.io/-W15eqx5TFmPWbCG8g-HCQ",
-    },
-  ],
-};
+import { tasks } from "@/data/tasks.js";
 </script>
 
 <template>
@@ -107,7 +78,7 @@ const tasks = {
           role="tabpanel"
           aria-labelledby="javaScript-tab"
         >
-          <div class="table-responsive mt-3">
+          <div class="table-responsive mt-4">
             <table
               class="table table-bordered table-hover"
               id="dataTable"

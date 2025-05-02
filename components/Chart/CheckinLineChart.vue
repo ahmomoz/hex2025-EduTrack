@@ -76,9 +76,9 @@ const chartData = {
       label: "JS 任務",
       data: dataset2,
       fill: false,
-      backgroundColor: "rgba(244, 189, 51, 0.05)", // 橘色淡色
-      borderColor: "rgba(244, 189, 51, 1)", // 橘色
-      pointBackgroundColor: "rgba(244, 189, 51, 1)", // 橘色
+      backgroundColor: "rgba(244, 189, 51, 0.05)",
+      borderColor: "rgba(244, 189, 51, 1)",
+      pointBackgroundColor: "rgba(244, 189, 51, 1)",
       tension: 0,
     },
   ],

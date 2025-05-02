@@ -1,9 +1,3 @@
-<script setup></script>
-
 <template>
-  <!-- Content Wrapper -->
-  <Dashboard />
-  <!-- End of Content Wrapper -->
+  <HomeDashboard />
 </template>
-
-<style scoped></style>

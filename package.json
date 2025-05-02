@@ -7,18 +7,22 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "deploy": "gh-pages --dotfiles -d .output/public"
   },
   "dependencies": {
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.9",
+    "nitropack": "^2.11.11",
     "nuxt": "^3.17.1",
     "sass": "^1.70.0",
+    "sweetalert2": "^11.19.1",
     "vue": "^3.5.13",
     "vue-chartjs": "^5.3.2",
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
+    "gh-pages": "^6.3.0",
     "less": "^4.3.0"
   }
 }

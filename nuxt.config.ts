@@ -3,8 +3,11 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
   devtools: { enabled: true },
   app: {
+    baseURL: process.env.NODE_ENV === "production" ? "/hex2025-EduTrack/" : "/",
+    buildAssetsDir: "/static/",
     head: {
       link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
         {
           rel: "stylesheet",
           href: "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined",
