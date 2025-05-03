@@ -225,6 +225,10 @@ onMounted(() => console.log(data.value));
 }
 .table-responsive {
   height: 500px;
+
+  @include mobile {
+    height: 420px;
+  }
 }
 th,
 td {

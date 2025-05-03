@@ -1,4 +1,34 @@
 <script setup>
+const resizeHandler = () => {
+  const body = document.body;
+  const sidebar = document.querySelector(".sidebar");
+
+  if (window.innerWidth < 768) {
+    const collapses = sidebar?.querySelectorAll(".collapse") || [];
+    collapses.forEach((el) => {
+      const bsCollapse = bootstrap.Collapse.getInstance(el);
+      bsCollapse?.hide();
+    });
+  }
+
+  if (window.innerWidth < 480 && !sidebar?.classList.contains("toggled")) {
+    body.classList.add("sidebar-toggled");
+    sidebar?.classList.add("toggled");
+    const collapses = sidebar?.querySelectorAll(".collapse") || [];
+    collapses.forEach((el) => {
+      const bsCollapse = bootstrap.Collapse.getInstance(el);
+      bsCollapse?.hide();
+    });
+  }
+};
+
+const scrollHandler = () => {
+  const scrollTopBtn = document.querySelector(".scroll-to-top");
+  if (scrollTopBtn) {
+    scrollTopBtn.style.display = window.scrollY > 100 ? "block" : "none";
+  }
+};
+
 onMounted(() => {
   const body = document.body;
   const sidebar = document.querySelector(".sidebar");
@@ -23,32 +53,12 @@ onMounted(() => {
   sidebarToggle?.addEventListener("click", toggleSidebar);
   sidebarToggleTop?.addEventListener("click", toggleSidebar);
 
-  window.addEventListener("resize", () => {
-    if (window.innerWidth < 768) {
-      const collapses = sidebar?.querySelectorAll(".collapse") || [];
-      collapses.forEach((el) => {
-        const bsCollapse = bootstrap.Collapse.getInstance(el);
-        bsCollapse?.hide();
-      });
-    }
+  // 添加事件監聽
+  window.addEventListener("resize", resizeHandler);
+  document.addEventListener("scroll", scrollHandler);
 
-    if (window.innerWidth < 480 && !sidebar?.classList.contains("toggled")) {
-      body.classList.add("sidebar-toggled");
-      sidebar?.classList.add("toggled");
-      const collapses = sidebar?.querySelectorAll(".collapse") || [];
-      collapses.forEach((el) => {
-        const bsCollapse = bootstrap.Collapse.getInstance(el);
-        bsCollapse?.hide();
-      });
-    }
-  });
-
-  // scroll-to-top 顯示/隱藏
-  document.addEventListener("scroll", () => {
-    if (scrollTopBtn) {
-      scrollTopBtn.style.display = window.scrollY > 100 ? "block" : "none";
-    }
-  });
+  // 重要：頁面載入時立即執行一次大小檢查
+  resizeHandler();
 
   // 平滑捲動
   scrollTopBtn?.addEventListener("click", (e) => {
@@ -68,7 +78,7 @@ onUnmounted(() => {
 
 <template>
   <ul
-    class="navbar-nav bg-primary sidebar sidebar-dark accordion"
+    class="navbar-nav bg-primary sidebar sidebar-dark accordion toggled"
     id="accordionSidebar"
   >
     <!-- Sidebar - Brand -->
