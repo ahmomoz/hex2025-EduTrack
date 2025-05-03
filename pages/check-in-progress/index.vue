@@ -36,7 +36,6 @@ watch(
     refresh();
   }
 );
-onMounted(() => console.log(data.value));
 </script>
 
 <template>

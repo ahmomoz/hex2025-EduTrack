@@ -1,5 +1,32 @@
 <script setup>
-import { tasks } from "@/data/tasks.js";
+const route = useRoute();
+
+// 獲取資料
+const { data: tasks, refresh } = await useFetch(() => "/tasks", {
+  key: route.fullPath,
+  initialCache: false,
+  baseURL: process.env.API_BASE_URL,
+  transform: (res) => {
+    return res?.formatted_tasks;
+  },
+  onResponseError({ response }) {
+    const { message } = response?.data;
+    $swal.fire({
+      position: "center",
+      icon: "error",
+      title: message || "發生未知錯誤，請稍後重試",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  },
+});
+
+watch(
+  () => route.fullPath,
+  () => {
+    refresh();
+  }
+);
 </script>
 
 <template>
