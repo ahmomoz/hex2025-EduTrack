@@ -35,7 +35,7 @@
           </div>
         </div>
         <div class="col-lg-6 mt-5 mt-lg-0">
-          <div class="card shadow mb-4">
+          <!-- <div class="card shadow mb-4">
             <div class="card-header py-3">
               <h6 class="m-0 font-weight-bold text-gray-800">搜尋結果</h6>
             </div>
@@ -65,11 +65,10 @@
                 </li>
               </ul>
             </div>
-          </div>
+          </div> -->
 
-          <!-- <div class="card shadow mt-3 mt-lg-5">
+          <div class="card shadow mt-3 mt-lg-5">
             <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-gray-800">搜尋結果</h6>
             </div>
             <div class="card-body py-3 py-lg-5">
               <div class="f-center">
@@ -84,7 +83,7 @@
                 <h3>請輸入 CodePen 帳號進行搜尋</h3>
               </div>
             </div>
-          </div> -->
+          </div>
         </div>
       </div>
     </div>

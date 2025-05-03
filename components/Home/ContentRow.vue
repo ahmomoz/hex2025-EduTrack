@@ -1,4 +1,15 @@
 <script setup>
+const props = defineProps({
+  stats: {
+    type: Object,
+    required: true,
+  },
+});
+
+const taskProgress = computed(() => {
+  const completed = props?.stats?.css?.length ?? 0;
+  return (completed / 27).toFixed(2) * 100;
+});
 </script>
 
 <template>
@@ -58,14 +69,19 @@
               </div>
               <div class="row no-gutters align-items-center">
                 <div class="col-auto">
-                  <div class="fs-3 mb-0 fw-bold">50%</div>
+                  <div class="fs-3 mb-0 fw-bold">
+                    {{ taskProgress }}
+                    %
+                  </div>
                 </div>
                 <div class="col">
                   <div class="progress progress-sm mr-2">
                     <div
                       class="progress-bar bg-info"
                       role="progressbar"
-                      style="width: 50%"
+                      :style="{
+                        width: `${taskProgress}%`,
+                      }"
                       aria-valuenow="50"
                       aria-valuemin="0"
                       aria-valuemax="100"
@@ -92,7 +108,8 @@
                 每日任務已經累積
               </div>
               <div class="fs-3 mb-0 fw-bold">
-                4 <span class="fs-6 fw-light">天</span>
+                {{ props?.stats?.css.length }}
+                <span class="fs-6 fw-light">天</span>
               </div>
             </div>
             <div class="col-auto">

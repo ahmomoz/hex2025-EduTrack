@@ -1,5 +1,29 @@
 <script setup>
-import { tasks } from "@/data/tasks.js";
+const route = useRoute();
+
+// 獲取資料
+const { data, refresh } = await useFetch(() => "/tasks", {
+  key: route.fullPath,
+  initialCache: false,
+  baseURL: process.env.API_BASE_URL,
+  onResponseError({ response }) {
+    const { message } = response?.data;
+    $swal.fire({
+      position: "center",
+      icon: "error",
+      title: message || "發生未知錯誤，請稍後重試",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  },
+});
+
+watch(
+  () => route.fullPath,
+  () => {
+    refresh();
+  }
+);
 </script>
 
 <template>
@@ -14,7 +38,7 @@ import { tasks } from "@/data/tasks.js";
         </div>
 
         <!-- Content Row -->
-        <HomeContentRow />
+        <HomeContentRow v-if="data?.stats" :stats="data?.stats" />
         <!-- Content Row -->
 
         <div class="row">
@@ -32,7 +56,10 @@ import { tasks } from "@/data/tasks.js";
               <!-- Card Body -->
               <div class="card-body">
                 <div class="chart-area">
-                  <ChartCheckinLineChart />
+                  <ChartCheckinLineChart
+                    v-if="data?.stats"
+                    :stats="data?.stats"
+                  />
                 </div>
               </div>
             </div>
@@ -64,11 +91,19 @@ import { tasks } from "@/data/tasks.js";
                       切版
                     </span>
                     <a
-                      :href="tasks.htmlAndCss[tasks.htmlAndCss.length - 1].link"
+                      :href="
+                        data?.formatted_tasks?.htmlAndCss[
+                          data?.formatted_tasks.htmlAndCss.length - 1
+                        ].link
+                      "
                       target="_blank"
                       class="fs-5 text-decoration-none slide-right-hover"
                     >
-                      {{ tasks.htmlAndCss[tasks.htmlAndCss.length - 1].title }}
+                      {{
+                        data?.formatted_tasks?.htmlAndCss[
+                          data?.formatted_tasks?.htmlAndCss.length - 1
+                        ].title
+                      }}
                     </a>
                   </li>
                   <li class="f-column gap-2">
@@ -77,11 +112,19 @@ import { tasks } from "@/data/tasks.js";
                       JavaScript
                     </span>
                     <a
-                      :href="tasks.javaScript[tasks.javaScript.length - 1].link"
+                      :href="
+                        data?.formatted_tasks?.javaScript[
+                          data?.formatted_tasks?.javaScript.length - 1
+                        ].link
+                      "
                       target="_blank"
                       class="fs-5 text-decoration-none slide-right-hover"
                     >
-                      {{ tasks.javaScript[tasks.javaScript.length - 1].title }}
+                      {{
+                        data?.formatted_tasks?.javaScript[
+                          data?.formatted_tasks?.javaScript.length - 1
+                        ].title
+                      }}
                     </a>
                   </li>
                 </ul>

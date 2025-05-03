@@ -50,14 +50,14 @@ function number_format(
   return s.join(dec);
 }
 
-// 模擬資料
-const labels = Array.from({ length: 21 }, (_, i) => `Day ${i + 1}`);
-const dataset1 = [
-  3, 4, 2, 5, 3, 2, 4, 4, 3, 5, 4, 3, 2, 5, 3, 4, 4, 3, 5, 2, 3,
-];
-const dataset2 = [
-  1, 2, 3, 2, 3, 2, 1, 3, 2, 4, 2, 1, 3, 2, 4, 3, 2, 1, 2, 3, 2,
-];
+// 資料來源由父元件傳入
+const props = defineProps({
+  stats: {
+    type: Object,
+    required: true,
+  },
+});
+const labels = Array.from({ length: props.stats.css.length }, (_, i) => `Day ${i + 1}`);
 
 // 設定圖表資料與選項
 const chartData = {
@@ -65,7 +65,7 @@ const chartData = {
   datasets: [
     {
       label: "切版任務",
-      data: dataset1,
+      data: props?.stats?.css,
       fill: false,
       backgroundColor: "rgba(78, 115, 223, 0.05)",
       borderColor: "rgba(78, 115, 223, 1)",
@@ -74,7 +74,7 @@ const chartData = {
     },
     {
       label: "JS 任務",
-      data: dataset2,
+      data: props?.stats?.js,
       fill: false,
       backgroundColor: "rgba(244, 189, 51, 0.05)",
       borderColor: "rgba(244, 189, 51, 1)",

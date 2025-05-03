@@ -87,7 +87,7 @@ watch(
               </thead>
               <tbody>
                 <tr
-                  v-for="{ id, date, title, link } in tasks.htmlAndCss"
+                  v-for="{ id, date, title, link } in tasks?.htmlAndCss"
                   :key="id"
                 >
                   <td>{{ date }}</td>
@@ -120,7 +120,7 @@ watch(
               </thead>
               <tbody>
                 <tr
-                  v-for="{ id, date, title, link } in tasks.javaScript"
+                  v-for="{ id, date, title, link } in tasks?.javaScript"
                   :key="id"
                 >
                   <td>{{ date }}</td>
