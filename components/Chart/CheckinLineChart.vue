@@ -120,10 +120,10 @@ const chartOptions = {
           // 判斷目前是第幾個 dataset
           if (context.datasetIndex === 0) {
             // 第一組（切版）
-            return "切版任務打卡數: " + number_format(context.raw);
+            return "切版任務完成數: " + number_format(context.raw);
           } else if (context.datasetIndex === 1) {
             // 第二組（JS）
-            return "JS 任務打卡數: " + number_format(context.raw);
+            return "JS 任務完成數: " + number_format(context.raw);
           }
           // 預設 fallback
           return number_format(context.raw);

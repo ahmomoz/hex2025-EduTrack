@@ -152,9 +152,13 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss" scoped>
+.sidebar {
+  transition: width 0.3s ease, opacity 0.3s ease;
+}
 #sidebarToggleTop {
   right: 0;
   padding-top: 28px;
   padding-right: 30px;
+  z-index: 100;
 }
 </style>

@@ -7,7 +7,7 @@ export default defineNuxtConfig({
     buildAssetsDir: "/static/",
     head: {
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
         {
           rel: "stylesheet",
           href: "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined",
@@ -41,6 +41,9 @@ export default defineNuxtConfig({
   },
   css: ["@/assets/stylesheets/all.scss"],
   vite: {
+    define: {
+      "process.env": process.env,
+    },
     css: {
       preprocessorOptions: {
         scss: {
