@@ -21,7 +21,7 @@ const taskProgress = computed(() => {
           <div class="row no-gutters align-items-center h-100">
             <div class="col">
               <div class="font-weight-bold text-primary mb-1">
-                連續完成每日任務打卡人數
+                每日總打卡次數
               </div>
               <div class="fs-3 mb-0 fw-bold">
                 21 <span class="fs-6 fw-light">人</span>

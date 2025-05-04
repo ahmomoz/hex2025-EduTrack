@@ -5,37 +5,95 @@ const { $swal } = useNuxtApp();
 import { useCheckinTableData } from "@/composables/useCheckinTableData";
 import { formatDate } from "@/utils/dateFormatter";
 
-// 搜尋和每頁筆數
+// 搜尋和每頁筆數變數
 const searchQuery = ref();
 const currentPage = ref(1);
-const itemsPerPage = ref(10);
 
-// 獲取資料
-const { data, pending, refresh } = await useFetch(() => "/dashboard", {
-  key: route.fullPath,
-  initialCache: false,
-  baseURL: process.env.API_BASE_URL,
-  transform: (res) => {
-    return useCheckinTableData(res.users, res.stats, "2025-04-28");
-  },
-  onResponseError({ response }) {
-    const { message } = response?.data;
-    $swal.fire({
-      position: "center",
-      icon: "error",
-      title: message || "發生未知錯誤，請稍後重試",
-      showConfirmButton: false,
-      timer: 1500,
-    });
-  },
-});
-
+/* ----------------- 獲取資料 ----------------- */
+const { data, pending, refresh } = await useFetch(
+  () => `/dashboard/?page=${currentPage.value}&page_size=10`,
+  {
+    initialCache: false,
+    cache: "no-store",
+    baseURL: process.env.API_BASE_URL,
+    watch: [currentPage],
+    transform: (res) => {
+      return useCheckinTableData(
+        res.users,
+        res.stats,
+        res.pagination,
+        res.updated_at,
+        "2025-05-01"
+      );
+    },
+    onResponseError({ response }) {
+      const { message } = response?.data;
+      $swal.fire({
+        position: "center",
+        icon: "error",
+        title: message || "發生未知錯誤，請稍後重試",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    },
+  }
+);
 watch(
   () => route.fullPath,
   () => {
     refresh();
   }
 );
+
+/* ----------------- 頁碼處理 ----------------- */
+// 算出頁碼中間 ... 函式
+const getVisiblePages = (totalPages) => {
+  const pages = [];
+
+  // 顯示的最大頁碼數（不含 ... 和上下箭頭）
+  const maxVisiblePages = 3;
+
+  if (totalPages <= 5) {
+    // 小於等於 5 頁時全部顯示
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push(i);
+    }
+  } else {
+    // 開頭幾頁（1、2、3）
+    if (currentPage.value <= 3) {
+      for (let i = 1; i <= maxVisiblePages + 1; i++) {
+        pages.push(i);
+      }
+      pages.push("...");
+      pages.push(totalPages);
+    }
+    // 結尾幾頁
+    else if (currentPage.value >= totalPages - 2) {
+      pages.push(1);
+      pages.push("...");
+      for (let i = totalPages - 3; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    }
+    // 中間滑動區域
+    else {
+      pages.push(1);
+      pages.push("...");
+      pages.push(currentPage.value - 1);
+      pages.push(currentPage.value);
+      pages.push(currentPage.value + 1);
+      pages.push("...");
+      pages.push(totalPages);
+    }
+  }
+
+  return pages;
+};
+
+// 切換頁碼
+const goToPage = (page) => {
+  currentPage.value = page;
+};
 </script>
 
 <template>
@@ -46,15 +104,20 @@ watch(
 
     <!-- DataTales Example -->
     <div class="card shadow mt-4">
-      <div class="card-header py-4">
+      <div class="card-header py-3">
         <h2 class="fs-5 m-0 text-primary">每日任務打卡狀況</h2>
       </div>
       <div class="card-body container-fluid pt-3">
         <div class="row">
           <div class="col">
             <ol class="p-0">
-              <li><p class="m-0">*資料更新頻率：一個小時更新一次</p></li>
               <li><p class="m-0">*只要在該日打卡討論串留言就算打卡成功</p></li>
+              <li>
+                <p class="m-0">
+                  *資料更新頻率：一個小時更新一次（最後更新時間：
+                  {{ data?.updatedAt }}）
+                </p>
+              </li>
             </ol>
           </div>
         </div>
@@ -114,10 +177,15 @@ watch(
             </thead>
             <tbody>
               <tr
-                v-for="{ author_id, username, days } in data?.processedUsers"
+                v-for="{
+                  global_name,
+                  author_id,
+                  username,
+                  days,
+                } in data?.processedUsers"
                 :key="author_id"
               >
-                <td>{{ username }}</td>
+                <td>{{ global_name }} ({{ username }})</td>
                 <td
                   v-for="(checked, index) in days"
                   :key="index"
@@ -136,7 +204,7 @@ watch(
           </div>
         </div>
 
-        <div class="row f-between-center mt-3">
+        <div class="row f-between-center mt-2">
           <div class="col-sm-6">
             <div
               class="dataTables_info"
@@ -144,7 +212,8 @@ watch(
               role="status"
               aria-live="polite"
             >
-              Showing 1 to 10 of {{ data?.processedUsers.length }} entries
+              Showing 1 to {{ data?.pagination?.page_size }} of
+              {{ data?.pagination?.total_count }} entries
             </div>
           </div>
           <div class="col-sm-6 mt-2 mt-sm-0">
@@ -157,50 +226,42 @@ watch(
                   <a
                     href="#"
                     aria-controls="dataTable"
-                    data-dt-idx="0"
-                    tabindex="0"
                     class="page-link"
+                    :disabled="currentPage === 1"
+                    @click.prevent="goToPage(page - 1)"
                   >
                     <i class="fas fa-solid fa-angle-left"></i>
                   </a>
                 </li>
-                <li class="paginate_button page-item active">
+                <li
+                  class="paginate_button page-item"
+                  :class="{
+                    active: page === currentPage,
+                    disabled: page === '...',
+                  }"
+                  v-for="(page, index) in getVisiblePages(
+                    data?.pagination?.total_pages
+                  )"
+                  :key="index"
+                >
                   <a
                     href="#"
                     aria-controls="dataTable"
-                    data-dt-idx="1"
-                    tabindex="0"
+                    v-if="page !== '...'"
                     class="page-link"
-                    >1</a
+                    @click.prevent="goToPage(page)"
                   >
-                </li>
-                <li class="paginate_button page-item">
-                  <a
-                    href="#"
-                    aria-controls="dataTable"
-                    data-dt-idx="2"
-                    tabindex="0"
-                    class="page-link"
-                    >2</a
-                  >
-                </li>
-                <li class="paginate_button page-item">
-                  <a
-                    href="#"
-                    aria-controls="dataTable"
-                    data-dt-idx="3"
-                    tabindex="0"
-                    class="page-link"
-                    >3</a
-                  >
+                    {{ page }}
+                  </a>
+                  <span v-else class="page-link">...</span>
                 </li>
                 <li class="paginate_button page-item next" id="dataTable_next">
                   <a
                     href="#"
                     aria-controls="dataTable"
-                    data-dt-idx="7"
-                    tabindex="0"
                     class="page-link"
+                    :disabled="currentPage === data?.pagination?.total_pages"
+                    @click.prevent="goToPage(page + 1)"
                   >
                     <i class="fas fa-solid fa-angle-right"></i>
                   </a>
@@ -223,7 +284,7 @@ watch(
   }
 }
 .table-responsive {
-  height: 500px;
+  height: 480px;
 
   @include mobile {
     height: 420px;
@@ -234,6 +295,6 @@ td {
   white-space: nowrap; /* 防止文字折行 */
   overflow: hidden; /* 超出部分隱藏 */
   text-overflow: ellipsis; /* 超出部分顯示省略號 */
-  padding: 10px;
+  padding: 8px;
 }
 </style>

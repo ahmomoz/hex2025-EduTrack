@@ -1,4 +1,10 @@
-export function useCheckinTableData(users, stats, startDate = '2025-04-28') {
+export function useCheckinTableData(
+  users,
+  stats,
+  pagination,
+  updatedAt,
+  startDate = "2025-05-01"
+) {
   const baseDate = new Date(startDate);
 
   // 用 stats 找出最晚的打卡日期
@@ -8,7 +14,8 @@ export function useCheckinTableData(users, stats, startDate = '2025-04-28') {
   }, baseDate);
 
   // 根據最晚日期計算 Day 數
-  const dayCount = Math.floor((latestDate - baseDate) / (1000 * 60 * 60 * 24)) + 1;
+  const dayCount =
+    Math.floor((latestDate - baseDate) / (1000 * 60 * 60 * 24)) + 1;
 
   // 產出 dateList
   const dateList = Array.from({ length: dayCount }, (_, i) => {
@@ -18,17 +25,20 @@ export function useCheckinTableData(users, stats, startDate = '2025-04-28') {
   });
 
   // 組合每位使用者的出勤資料（布林陣列）
-  const processedUsers = users.map(user => {
-    const days = dateList.map(date => !!user.presence?.[date]);
+  const processedUsers = users.map((user) => {
+    const days = dateList.map((date) => !!user.presence?.[date]);
     return {
       author_id: user.author_id,
+      global_name: user.global_name,
       username: user.username,
-      days
+      days,
     };
   });
 
   return {
     dateList,
-    processedUsers
+    processedUsers,
+    pagination,
+    updatedAt,
   };
 }
