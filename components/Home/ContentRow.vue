@@ -4,8 +4,12 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  checkInNum: {
+    required: true,
+  },
 });
 
+// 任務進度條計算
 const taskProgress = computed(() => {
   const completed = props?.stats?.css?.length ?? 0;
   return (completed / 27).toFixed(2) * 100;
@@ -14,17 +18,16 @@ const taskProgress = computed(() => {
 
 <template>
   <div class="row">
-    <!-- Earnings (Monthly) Card Example -->
     <div class="col-xl-3 col-md-6 mb-4">
       <div class="card border-left-primary shadow h-100 p-2">
         <div class="card-body">
           <div class="row no-gutters align-items-center h-100">
             <div class="col">
               <div class="font-weight-bold text-primary mb-1">
-                每日總打卡次數
+                每日任務總打卡次數
               </div>
               <div class="fs-3 mb-0 fw-bold">
-                21 <span class="fs-6 fw-light">人</span>
+                {{ checkInNum }} <span class="fs-6 fw-light">次</span>
               </div>
             </div>
             <div class="col-auto">
@@ -35,28 +38,6 @@ const taskProgress = computed(() => {
       </div>
     </div>
 
-    <!-- Earnings (Monthly) Card Example -->
-    <div class="col-xl-3 col-md-6 mb-4">
-      <div class="card border-left-success shadow h-100 p-2">
-        <div class="card-body">
-          <div class="row no-gutters align-items-center h-100">
-            <div class="col">
-              <div class="font-weight-bold text-success mb-1">
-                今日完成每日任務打卡人數
-              </div>
-              <div class="fs-3 mb-0 fw-bold">
-                3 <span class="fs-6 fw-light">人</span>
-              </div>
-            </div>
-            <div class="col-auto">
-              <i class="fas fa-user-check fa-2x text-gray-300"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Earnings (Monthly) Card Example -->
     <div class="col-xl-3 col-md-6 mb-4">
       <div class="card border-left-info shadow h-100 p-2">
         <div class="card-body">
@@ -98,7 +79,6 @@ const taskProgress = computed(() => {
       </div>
     </div>
 
-    <!-- Pending Requests Card Example -->
     <div class="col-xl-3 col-md-6 mb-4">
       <div class="card border-left-warning shadow h-100 p-2">
         <div class="card-body">
@@ -114,6 +94,29 @@ const taskProgress = computed(() => {
             </div>
             <div class="col-auto">
               <i class="fas fa-calendar fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-left-success shadow h-100 p-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center h-100">
+            <div class="col">
+              <div class="font-weight-bold text-success mb-1">查看每日任務打卡回報區</div>
+              <div class="fs-5 mb-0">
+                <a
+                  href="https://discord.com/channels/801807326054055996/1349590197708525638"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >點此前往 Discord
+                </a>
+              </div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-arrow-right fa-2x text-gray-300"></i>
             </div>
           </div>
         </div>

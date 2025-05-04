@@ -1,22 +1,37 @@
 <script setup>
+const { $swal } = useNuxtApp();
 const route = useRoute();
 
+const handleFetchError = (response) => {
+  const { message } = response?.data || {};
+  $swal.fire({
+    position: "center",
+    icon: "error",
+    title: message || "發生未知錯誤，請稍後重試",
+    showConfirmButton: false,
+    timer: 1500,
+  });
+};
+
 // 獲取資料
-const { data, refresh } = await useFetch(() => "/tasks", {
-  key: route.fullPath,
-  initialCache: false,
-  baseURL: process.env.API_BASE_URL,
-  onResponseError({ response }) {
-    const { message } = response?.data;
-    $swal.fire({
-      position: "center",
-      icon: "error",
-      title: message || "發生未知錯誤，請稍後重試",
-      showConfirmButton: false,
-      timer: 1500,
-    });
-  },
-});
+const [{ data: tasks }, { data: checkInNum }] = await Promise.all([
+  useFetch("/tasks", {
+    baseURL: process.env.API_BASE_URL,
+    onResponseError({ response }) {
+      handleFetchError(response);
+    },
+  }),
+  useFetch("/dashboard", {
+    baseURL: process.env.API_BASE_URL,
+    transform: (res) =>
+      res.stats
+        .filter((item) => new Date(item.date) >= new Date("2025-05-01"))
+        .reduce((sum, item) => sum + item.count, 0),
+    onResponseError({ response }) {
+      handleFetchError(response);
+    },
+  }),
+]);
 
 watch(
   () => route.fullPath,
@@ -38,7 +53,7 @@ watch(
         </div>
 
         <!-- Content Row -->
-        <HomeContentRow v-if="data?.stats" :stats="data?.stats" />
+        <HomeContentRow v-if="tasks?.stats" :stats="tasks?.stats" :checkInNum="checkInNum" />
         <!-- Content Row -->
 
         <div class="row">
@@ -57,8 +72,8 @@ watch(
               <div class="card-body">
                 <div class="chart-area">
                   <ChartCheckinLineChart
-                    v-if="data?.stats"
-                    :stats="data?.stats"
+                    v-if="tasks?.stats"
+                    :stats="tasks?.stats"
                   />
                 </div>
               </div>
@@ -92,16 +107,16 @@ watch(
                     </span>
                     <a
                       :href="
-                        data?.formatted_tasks?.htmlAndCss[
-                          data?.formatted_tasks.htmlAndCss.length - 1
+                        tasks?.formatted_tasks?.htmlAndCss[
+                          tasks?.formatted_tasks.htmlAndCss.length - 1
                         ].link
                       "
                       target="_blank"
                       class="fs-5 text-decoration-none slide-right-hover"
                     >
                       {{
-                        data?.formatted_tasks?.htmlAndCss[
-                          data?.formatted_tasks?.htmlAndCss.length - 1
+                        tasks?.formatted_tasks?.htmlAndCss[
+                          tasks?.formatted_tasks?.htmlAndCss.length - 1
                         ].title
                       }}
                     </a>
@@ -113,16 +128,16 @@ watch(
                     </span>
                     <a
                       :href="
-                        data?.formatted_tasks?.javaScript[
-                          data?.formatted_tasks?.javaScript.length - 1
+                        tasks?.formatted_tasks?.javaScript[
+                          tasks?.formatted_tasks?.javaScript.length - 1
                         ].link
                       "
                       target="_blank"
                       class="fs-5 text-decoration-none slide-right-hover"
                     >
                       {{
-                        data?.formatted_tasks?.javaScript[
-                          data?.formatted_tasks?.javaScript.length - 1
+                        tasks?.formatted_tasks?.javaScript[
+                          tasks?.formatted_tasks?.javaScript.length - 1
                         ].title
                       }}
                     </a>
