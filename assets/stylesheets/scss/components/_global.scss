@@ -26,6 +26,10 @@ a {
       flex: 1 0 auto;
     }
   }
+  
+  @include pad {
+    max-width: 100vw;
+  }
 }
 
 // Set container padding to match gutter width instead of default 15px
