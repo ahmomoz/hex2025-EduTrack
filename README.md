@@ -25,6 +25,9 @@
 - GitHub Pages 部署
 - SweetAlert 2
 
+後端開發夥伴：
+<a href="https://github.com/z111048">詹姆士</a>
+
 ---
 
 ## 開發指令
