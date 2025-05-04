@@ -37,9 +37,6 @@ onMounted(() => {
   const scrollTopBtn = document.querySelector(".scroll-to-top");
 
   const toggleSidebar = () => {
-    if (sidebar.classList.contains("d-none")) {
-      sidebar.classList.remove("d-none");
-    }
     body.classList.toggle("sidebar-toggled");
     sidebar?.classList.toggle("toggled");
     if (sidebar?.classList.contains("toggled")) {
@@ -81,7 +78,7 @@ onUnmounted(() => {
 
 <template>
   <ul
-    class="navbar-nav bg-primary sidebar sidebar-dark accordion d-none d-sm-flex"
+    class="navbar-nav bg-primary sidebar sidebar-dark accordion toggled"
     id="accordionSidebar"
   >
     <!-- Sidebar - Brand -->
@@ -157,5 +154,11 @@ onUnmounted(() => {
   padding-top: 28px;
   padding-right: 30px;
   z-index: 100;
+}
+#accordionSidebar {
+  @include pad {
+    position: absolute;
+    z-index: 20;
+  }
 }
 </style>
