@@ -84,7 +84,7 @@ watch(
                   <th class="fw-medium">連結</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody v-if="tasks?.htmlAndCss">
                 <tr
                   v-for="{ id, date, title, link } in tasks?.htmlAndCss"
                   :key="id"
@@ -93,6 +93,11 @@ watch(
                   <td>
                     <a :href="link" target="_blank">{{ title }}</a>
                   </td>
+                </tr>
+              </tbody>
+              <tbody v-else>
+                <tr>
+                  <td colspan="2" class="text-center">載入中 ...</td>
                 </tr>
               </tbody>
             </table>
@@ -117,7 +122,7 @@ watch(
                   <th class="fw-medium">連結</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody v-if="tasks?.javaScript">
                 <tr
                   v-for="{ id, date, title, link } in tasks?.javaScript"
                   :key="id"
@@ -126,6 +131,11 @@ watch(
                   <td>
                     <a :href="link" target="_blank">{{ title }}</a>
                   </td>
+                </tr>
+              </tbody>
+              <tbody v-else>
+                <tr>
+                  <td colspan="2" class="text-center">載入中 ...</td>
                 </tr>
               </tbody>
             </table>
