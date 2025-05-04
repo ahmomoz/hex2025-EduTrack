@@ -22,7 +22,6 @@ const fetchData = async (currentPage = 1) => {
       res.updated_at,
       "2025-05-01"
     );
-    console.log(data.value);
   } catch (error) {
     $swal.fire({
       position: "center",
