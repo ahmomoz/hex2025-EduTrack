@@ -5,15 +5,18 @@ import { useCheckinTableData } from "@/composables/useCheckinTableData";
 import { formatDate } from "@/utils/dateFormatter";
 
 // 搜尋和每頁筆數變數
-const searchQuery = ref();
+const searchQuery = ref("");
 const currentPage = ref(1);
-const pageTotal = ref(10);
+const pageSize = ref(10);
+const debounceTimer = ref(null);
 
 /* ----------------- 獲取資料 ----------------- */
 const data = ref(null);
-const fetchData = async (currentPage = 1) => {
+const fetchData = async () => {
   try {
-    const res = await $fetch(`${process.env.API_BASE_URL}/dashboard/`);
+    const res = await $fetch(
+      `${process.env.API_BASE_URL}/dashboard/?page=${currentPage.value}&page_size=${pageSize.value}&search=${searchQuery.value}`
+    );
 
     data.value = useCheckinTableData(
       res.users,
@@ -33,7 +36,19 @@ const fetchData = async (currentPage = 1) => {
   }
 };
 
+/* ----------------- 監聽器與生命週期 ----------------- */
+// 防抖搜尋處理（300ms）
+const debouncedSearch = () => {
+  clearTimeout(debounceTimer.value);
+  debounceTimer.value = setTimeout(() => {
+    currentPage.value = 1;
+    fetchData();
+  }, 300);
+};
+
 onMounted(() => fetchData());
+watch([currentPage, pageSize], () => fetchData());
+watch(searchQuery, debouncedSearch);
 
 /* ----------------- 頁碼處理 ----------------- */
 // 算出頁碼中間 ... 函式
@@ -120,6 +135,8 @@ const changePage = (page) => {
                   name="dataTable_length"
                   aria-controls="dataTable"
                   class="form-control form-control-sm"
+                  v-model="pageSize"
+                  @change="currentPage = 1"
                 >
                   <option value="10">10</option>
                   <option value="25">25</option>
@@ -137,8 +154,9 @@ const changePage = (page) => {
                 <input
                   type="search"
                   class="form-control form-control-sm"
-                  placeholder="搜尋使用者名稱"
+                  placeholder="請輸入顯示名稱"
                   aria-controls="dataTable"
+                  v-model="searchQuery"
                 />
               </label>
             </div>
@@ -147,7 +165,7 @@ const changePage = (page) => {
 
         <div class="table-responsive mt-3">
           <table
-            v-if="data"
+            v-if="data?.processedUsers.length > 0"
             class="table table-bordered table-hover"
             id="dataTable"
             width="100%"
@@ -173,11 +191,7 @@ const changePage = (page) => {
                   author_id,
                   username,
                   days,
-                } in data?.processedUsers.sort(
-                  (a, b) =>
-                    b.days.filter((day) => day).length -
-                    a.days.filter((day) => day).length
-                )"
+                } in data?.processedUsers"
                 :key="author_id"
               >
                 <td>{{ global_name }} ({{ username }})</td>
@@ -197,6 +211,9 @@ const changePage = (page) => {
               </tr>
             </tbody>
           </table>
+          <div class="py-4" v-else-if="data?.processedUsers.length === 0">
+            <h2 class="fs-5 fs-lg-2">無符合搜尋結果的資料</h2>
+          </div>
           <div class="py-4" v-else>
             <h2 class="fs-5 fs-lg-2">載入中 ...</h2>
           </div>
@@ -210,23 +227,36 @@ const changePage = (page) => {
               role="status"
               aria-live="polite"
             >
-              Showing 1 to {{ data?.pagination?.page_size }} of
-              {{ data?.pagination?.total_count }} entries
+              {{
+                data?.pagination
+                  ? `Showing ${
+                      (data.pagination.current_page - 1) *
+                        data.pagination.page_size +
+                      1
+                    } 
+          to ${Math.min(
+            data.pagination.current_page * data.pagination.page_size,
+            data.pagination.total_count
+          )} 
+          of ${data.pagination.total_count} entries`
+                  : "Loading..."
+              }}
             </div>
           </div>
           <div class="col-sm-6 mt-2 mt-sm-0">
             <div class="f-md-end-center">
               <ul class="pagination">
                 <li
-                  class="paginate_button page-item previous disabled"
-                  id="dataTable_previous"
+                  class="paginate_button page-item previous"
+                  :class="{ disabled: currentPage === 1 }"
                 >
                   <a
                     href="#"
                     aria-controls="dataTable"
                     class="page-link"
-                    :disabled="currentPage === 1"
-                    @click.prevent="changePage(page - 1)"
+                    @click.prevent="
+                      currentPage > 1 && changePage(currentPage - 1)
+                    "
                   >
                     <i class="fas fa-solid fa-angle-left"></i>
                   </a>
@@ -253,13 +283,21 @@ const changePage = (page) => {
                   </a>
                   <span v-else class="page-link">...</span>
                 </li>
-                <li class="paginate_button page-item next" id="dataTable_next">
+                <li
+                  class="paginate_button page-item next"
+                  id="dataTable_next"
+                  :class="{
+                    disabled: currentPage === data?.pagination?.total_pages,
+                  }"
+                >
                   <a
                     href="#"
                     aria-controls="dataTable"
                     class="page-link"
-                    :disabled="currentPage === data?.pagination?.total_pages"
-                    @click.prevent="changePage(page + 1)"
+                    @click.prevent="
+                      currentPage < data?.pagination?.total_pages &&
+                        changePage(currentPage + 1)
+                    "
                   >
                     <i class="fas fa-solid fa-angle-right"></i>
                   </a>
