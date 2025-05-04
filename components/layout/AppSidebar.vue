@@ -86,7 +86,7 @@ onUnmounted(() => {
   >
     <!-- Sidebar - Brand -->
     <NuxtLink class="sidebar-brand f-align-center" to="/">
-      <div class="fw-medium">六角體驗營小幫手</div>
+      <div class="fw-medium">每日任務儀表版</div>
     </NuxtLink>
 
     <!-- Divider -->
@@ -113,23 +113,7 @@ onUnmounted(() => {
         <span>打卡進度追蹤</span>
       </NuxtLink>
     </li>
-
-    <!-- Nav Item - Search -->
-    <li class="nav-item">
-      <NuxtLink class="nav-link py-2" to="/search">
-        <i class="fas fa-fw fa-user"></i>
-        <span>個人進度查詢</span>
-      </NuxtLink>
-    </li>
-
-    <!-- Nav Item - Charts
-    <li class="nav-item">
-      <NuxtLink class="nav-link py-2" to="/charts">
-        <i class="fas fa-fw fa-chart-area"></i>
-        <span>數據報表</span>
-      </NuxtLink>
-    </li> -->
-
+    
     <!-- Heading -->
     <div class="sidebar-heading mt-4">LIST</div>
 
