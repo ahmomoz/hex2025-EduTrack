@@ -2,7 +2,7 @@
 const route = useRoute();
 
 // 獲取資料
-const { data: tasks, refresh } = await useFetch(() => "/tasks", {
+const { data: tasks, refresh } = await useFetch(() => "/tasks/", {
   key: route.fullPath,
   initialCache: false,
   baseURL: process.env.API_BASE_URL,
@@ -20,7 +20,6 @@ const { data: tasks, refresh } = await useFetch(() => "/tasks", {
     });
   },
 });
-
 watch(
   () => route.fullPath,
   () => {

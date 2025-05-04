@@ -15,13 +15,13 @@ const handleFetchError = (response) => {
 
 // 獲取資料
 const [{ data: tasks }, { data: checkInNum }] = await Promise.all([
-  useFetch("/tasks", {
+  useFetch("/tasks/", {
     baseURL: process.env.API_BASE_URL,
     onResponseError({ response }) {
       handleFetchError(response);
     },
   }),
-  useFetch("/dashboard", {
+  useFetch("/dashboard/", {
     baseURL: process.env.API_BASE_URL,
     transform: (res) =>
       res.stats
