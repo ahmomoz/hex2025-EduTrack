@@ -3,6 +3,7 @@ export function useCheckinTableData(
   stats,
   pagination,
   updatedAt,
+  completed_count,
   startDate = "2025-05-01"
 ) {
   const baseDate = new Date(startDate);
@@ -31,6 +32,7 @@ export function useCheckinTableData(
       author_id: user.author_id,
       global_name: user.global_name,
       username: user.username,
+      completed_count: user.completed_count,
       days,
     };
   });

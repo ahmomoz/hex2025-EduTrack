@@ -15,7 +15,7 @@ const data = ref(null);
 const fetchData = async () => {
   try {
     const res = await $fetch(
-      `${process.env.API_BASE_URL}/dashboard/?page=${currentPage.value}&page_size=${pageSize.value}&search=${searchQuery.value}`
+      `${process.env.API_BASE_URL}/dashboard/?page=${currentPage.value}&page_size=${pageSize.value}&search=${searchQuery.value}&sort_by=completed_count&sort_order=desc`
     );
 
     data.value = useCheckinTableData(
@@ -23,6 +23,7 @@ const fetchData = async () => {
       res.stats,
       res.pagination,
       res.updated_at,
+      res.completed_count,
       "2025-05-01"
     );
   } catch (error) {
@@ -190,13 +191,14 @@ const changePage = (page) => {
                   global_name,
                   author_id,
                   username,
+                  completed_count,
                   days,
                 } in data?.processedUsers"
                 :key="author_id"
               >
                 <td>{{ global_name }} ({{ username }})</td>
                 <td class="text-center">
-                  {{ days.filter((day) => day).length }}
+                  {{ completed_count }}
                 </td>
                 <td
                   v-for="(checked, index) in days"
