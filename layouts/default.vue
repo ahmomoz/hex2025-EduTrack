@@ -1,7 +1,7 @@
 <script setup></script>
 
 <template>
-  <div id="wrapper">
+  <div id="wrapper" class="position-relative">
     <LayoutAppSidebar />
     <slot />
   </div>
