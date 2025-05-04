@@ -1,5 +1,4 @@
 <script setup>
-const route = useRoute();
 const { $swal } = useNuxtApp();
 
 import { useCheckinTableData } from "@/composables/useCheckinTableData";
@@ -8,42 +7,33 @@ import { formatDate } from "@/utils/dateFormatter";
 // 搜尋和每頁筆數變數
 const searchQuery = ref();
 const currentPage = ref(1);
+const pageTotal = ref(10);
 
 /* ----------------- 獲取資料 ----------------- */
-const { data, pending, refresh } = await useFetch(
-  () => `/dashboard/?page=${currentPage.value}&page_size=10`,
-  {
-    initialCache: false,
-    cache: "no-store",
-    baseURL: process.env.API_BASE_URL,
-    watch: [currentPage],
-    transform: (res) => {
-      return useCheckinTableData(
-        res.users,
-        res.stats,
-        res.pagination,
-        res.updated_at,
-        "2025-05-01"
-      );
-    },
-    onResponseError({ response }) {
-      const { message } = response?.data;
-      $swal.fire({
-        position: "center",
-        icon: "error",
-        title: message || "發生未知錯誤，請稍後重試",
-        showConfirmButton: false,
-        timer: 1500,
-      });
-    },
+const data = ref(null);
+const fetchData = async (currentPage = 1) => {
+  try {
+    const res = await $fetch(`${process.env.API_BASE_URL}/dashboard/`);
+
+    data.value = useCheckinTableData(
+      res.users,
+      res.stats,
+      res.pagination,
+      res.updated_at,
+      "2025-05-01"
+    );
+  } catch (error) {
+    $swal.fire({
+      position: "center",
+      icon: "error",
+      title: error?.data || "發生未知錯誤，請稍後重試",
+      showConfirmButton: false,
+      timer: 1500,
+    });
   }
-);
-watch(
-  () => route.fullPath,
-  () => {
-    refresh();
-  }
-);
+};
+
+onMounted(() => fetchData());
 
 /* ----------------- 頁碼處理 ----------------- */
 // 算出頁碼中間 ... 函式
@@ -91,7 +81,7 @@ const getVisiblePages = (totalPages) => {
 };
 
 // 切換頁碼
-const goToPage = (page) => {
+const changePage = (page) => {
   currentPage.value = page;
 };
 </script>
@@ -200,7 +190,7 @@ const goToPage = (page) => {
             </tbody>
           </table>
           <div class="py-4" v-else>
-            <h2 class="fs-5 fs-lg-2">請重新整理頁面</h2>
+            <h2 class="fs-5 fs-lg-2">載入中 ...</h2>
           </div>
         </div>
 
@@ -228,7 +218,7 @@ const goToPage = (page) => {
                     aria-controls="dataTable"
                     class="page-link"
                     :disabled="currentPage === 1"
-                    @click.prevent="goToPage(page - 1)"
+                    @click.prevent="changePage(page - 1)"
                   >
                     <i class="fas fa-solid fa-angle-left"></i>
                   </a>
@@ -249,7 +239,7 @@ const goToPage = (page) => {
                     aria-controls="dataTable"
                     v-if="page !== '...'"
                     class="page-link"
-                    @click.prevent="goToPage(page)"
+                    @click.prevent="changePage(page)"
                   >
                     {{ page }}
                   </a>
@@ -261,7 +251,7 @@ const goToPage = (page) => {
                     aria-controls="dataTable"
                     class="page-link"
                     :disabled="currentPage === data?.pagination?.total_pages"
-                    @click.prevent="goToPage(page + 1)"
+                    @click.prevent="changePage(page + 1)"
                   >
                     <i class="fas fa-solid fa-angle-right"></i>
                   </a>
