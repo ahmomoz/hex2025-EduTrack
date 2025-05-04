@@ -113,7 +113,7 @@ onUnmounted(() => {
     <li class="nav-item active">
       <NuxtLink class="nav-link" to="/">
         <i class="fas fa-fw fa-tachometer-alt"></i>
-        <span>Dashboard</span>
+        <span> Dashboard</span>
       </NuxtLink>
     </li>
 
@@ -127,10 +127,10 @@ onUnmounted(() => {
     <li class="nav-item mt-2">
       <NuxtLink class="nav-link py-2" to="/check-in-progress">
         <i class="fas fa-fw fa-table"></i>
-        <span>打卡進度追蹤</span>
+        <span> 打卡進度追蹤</span>
       </NuxtLink>
     </li>
-    
+
     <!-- Heading -->
     <div class="sidebar-heading mt-4">LIST</div>
 
@@ -138,8 +138,24 @@ onUnmounted(() => {
     <li class="nav-item mt-2">
       <NuxtLink class="nav-link py-2" to="/tasks">
         <i class="fas fa-fw fa-clipboard-list"></i>
-        <span>每日任務列表</span>
+        <span> 每日任務列表</span>
       </NuxtLink>
+    </li>
+
+    <!-- Heading -->
+    <div class="sidebar-heading mt-4">LINK</div>
+
+    <!-- Nav Item - Tasks -->
+    <li class="nav-item mt-2">
+      <a
+        class="nav-link py-2"
+        href="https://liberating-turtle-5a2.notion.site/1e76a2468518808aabb1ff740fb936b2?pvs=4"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <i class="fas fa-fw fa-thumbs-up"></i>
+        <span> 體驗營證書攻略包</span>
+      </a>
     </li>
 
     <!-- Divider -->
