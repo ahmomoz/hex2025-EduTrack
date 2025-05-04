@@ -1,4 +1,24 @@
 <script setup>
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+router.afterEach(() => {
+  const body = document.body;
+  const sidebar = document.querySelector(".sidebar");
+
+  if (window.innerWidth < 768) {
+    body.classList.add("sidebar-toggled");
+    sidebar?.classList.add("toggled");
+
+    const collapses = sidebar?.querySelectorAll(".collapse") || [];
+    collapses.forEach((el) => {
+      const bsCollapse = bootstrap.Collapse.getInstance(el);
+      bsCollapse?.hide();
+    });
+  }
+});
+
 const resizeHandler = () => {
   const body = document.body;
   const sidebar = document.querySelector(".sidebar");
