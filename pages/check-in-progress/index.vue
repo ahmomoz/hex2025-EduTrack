@@ -22,6 +22,7 @@ const fetchData = async (currentPage = 1) => {
       res.updated_at,
       "2025-05-01"
     );
+    console.log(data.value);
   } catch (error) {
     $swal.fire({
       position: "center",
@@ -156,6 +157,7 @@ const changePage = (page) => {
             <thead class="table-light">
               <tr>
                 <th>使用者名稱</th>
+                <th>累積打卡天數</th>
                 <th
                   v-for="(date, index) in data?.dateList"
                   :key="index"
@@ -172,10 +174,17 @@ const changePage = (page) => {
                   author_id,
                   username,
                   days,
-                } in data?.processedUsers"
+                } in data?.processedUsers.sort(
+                  (a, b) =>
+                    b.days.filter((day) => day).length -
+                    a.days.filter((day) => day).length
+                )"
                 :key="author_id"
               >
                 <td>{{ global_name }} ({{ username }})</td>
+                <td class="text-center">
+                  {{ days.filter((day) => day).length }}
+                </td>
                 <td
                   v-for="(checked, index) in days"
                   :key="index"
@@ -280,11 +289,18 @@ const changePage = (page) => {
     height: 420px;
   }
 }
+th {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 2;
+  box-shadow: inset 0 -1px #dee2e6;
+}
 th,
 td {
-  white-space: nowrap; /* 防止文字折行 */
-  overflow: hidden; /* 超出部分隱藏 */
-  text-overflow: ellipsis; /* 超出部分顯示省略號 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   padding: 8px;
 }
 </style>
