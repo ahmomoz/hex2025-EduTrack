@@ -2,6 +2,9 @@
 const { $swal } = useNuxtApp();
 const route = useRoute();
 
+const tasks = ref(null);
+const checkInNum = ref(0);
+
 const handleFetchError = (response) => {
   const { message } = response?.data || {};
   $swal.fire({
@@ -13,32 +16,28 @@ const handleFetchError = (response) => {
   });
 };
 
-// 獲取資料
-const [{ data: tasks }, { data: checkInNum }] = await Promise.all([
-  useFetch("/tasks/", {
-    baseURL: process.env.API_BASE_URL,
-    onResponseError({ response }) {
-      handleFetchError(response);
-    },
-  }),
-  useFetch("/dashboard/", {
-    baseURL: process.env.API_BASE_URL,
-    transform: (res) =>
-      res.stats
-        .filter((item) => new Date(item.date) >= new Date("2025-05-01"))
-        .reduce((sum, item) => sum + item.count, 0),
-    onResponseError({ response }) {
-      handleFetchError(response);
-    },
-  }),
-]);
+const fetchData = async () => {
+  try {
+    const [taskData, dashboardData] = await Promise.all([
+      $fetch("/tasks/", {
+        baseURL: process.env.API_BASE_URL,
+      }),
+      $fetch("/dashboard/", {
+        baseURL: process.env.API_BASE_URL,
+      }),
+    ]);
 
-watch(
-  () => route.fullPath,
-  () => {
-    refresh();
+    tasks.value = taskData;
+
+    // 處理 checkInNum 的統計
+    checkInNum.value = dashboardData?.stats
+      ?.filter((item) => new Date(item.date) >= new Date("2025-05-01"))
+      ?.reduce((sum, item) => sum + item.count, 0) || 0;
+  } catch (error) {
+    handleFetchError(error.response || {});
   }
-);
+};
+onMounted(() => fetchData());
 </script>
 
 <template>

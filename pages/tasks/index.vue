@@ -1,16 +1,16 @@
 <script setup>
-const route = useRoute();
+const { $swal } = useNuxtApp();
 
-// 獲取資料
-const { data: tasks, refresh } = await useFetch(() => "/tasks/", {
-  key: route.fullPath,
-  initialCache: false,
-  baseURL: process.env.API_BASE_URL,
-  transform: (res) => {
-    return res?.formatted_tasks;
-  },
-  onResponseError({ response }) {
-    const { message } = response?.data;
+const tasks = ref(null);
+
+const fetchTasks = async () => {
+  try {
+    const res = await $fetch("/tasks/", {
+      baseURL: process.env.API_BASE_URL,
+    });
+    tasks.value = res?.formatted_tasks;
+  } catch (error) {
+    const { message } = error?.response?.data || {};
     $swal.fire({
       position: "center",
       icon: "error",
@@ -18,14 +18,9 @@ const { data: tasks, refresh } = await useFetch(() => "/tasks/", {
       showConfirmButton: false,
       timer: 1500,
     });
-  },
-});
-watch(
-  () => route.fullPath,
-  () => {
-    refresh();
   }
-);
+};
+onMounted(() => fetchTasks());
 </script>
 
 <template>
