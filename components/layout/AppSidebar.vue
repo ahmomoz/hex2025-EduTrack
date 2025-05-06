@@ -42,6 +42,7 @@ const resizeHandler = () => {
   }
 };
 
+// 右下往上滑小按鈕邏輯
 const scrollHandler = () => {
   const scrollTopBtn = document.querySelector(".scroll-to-top");
   if (scrollTopBtn) {

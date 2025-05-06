@@ -1,4 +1,5 @@
 export function useCheckinTableData(
+  avatar_url,
   users,
   stats,
   pagination,
@@ -29,6 +30,7 @@ export function useCheckinTableData(
   const processedUsers = users.map((user) => {
     const days = dateList.map((date) => !!user.presence?.[date]);
     return {
+      avatar_url: user.avatar_url,
       author_id: user.author_id,
       global_name: user.global_name,
       username: user.username,

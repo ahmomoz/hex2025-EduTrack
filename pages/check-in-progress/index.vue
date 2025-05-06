@@ -19,6 +19,7 @@ const fetchData = async () => {
     );
 
     data.value = useCheckinTableData(
+      res.avatar_url,
       res.users,
       res.stats,
       res.pagination,
@@ -26,6 +27,7 @@ const fetchData = async () => {
       res.completed_count,
       "2025-05-01"
     );
+    console.log(res);
   } catch (error) {
     $swal.fire({
       position: "center",
@@ -104,7 +106,7 @@ const changePage = (page) => {
 
 <template>
   <!-- Begin Page Content -->
-  <div class="container-fluid py-4 height-100vh">
+  <div class="w-100 px-4 px-md-5 py-4 height-100vh">
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">Tables</h1>
 
@@ -174,7 +176,7 @@ const changePage = (page) => {
           >
             <thead class="table-light">
               <tr>
-                <th>使用者名稱</th>
+                <th>使用者</th>
                 <th>累積打卡天數</th>
                 <th
                   v-for="(date, index) in data?.dateList"
@@ -188,6 +190,7 @@ const changePage = (page) => {
             <tbody>
               <tr
                 v-for="{
+                  avatar_url,
                   global_name,
                   author_id,
                   username,
@@ -196,7 +199,15 @@ const changePage = (page) => {
                 } in data?.processedUsers"
                 :key="author_id"
               >
-                <td>{{ global_name }} ({{ username }})</td>
+                <td>
+                  <NuxtImg
+                    :src="avatar_url"
+                    alt="avatar-image"
+                    width="30"
+                    height="30"
+                    class="rounded-circle me-2"
+                  />{{ global_name }} ({{ username }})
+                </td>
                 <td class="text-center">
                   {{ completed_count }}
                 </td>
@@ -314,18 +325,11 @@ const changePage = (page) => {
 </template>
 
 <style lang="scss" scoped>
-.container-fluid {
-  max-width: calc(100vw - 227px);
-
-  @include pad {
-    max-width: 100%;
-  }
-}
 .table-responsive {
   height: 480px;
 
   @include mobile {
-    height: 420px;
+    height: 100%;
   }
 }
 th {

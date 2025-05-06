@@ -1,6 +1,5 @@
 <script setup>
 const { $swal } = useNuxtApp();
-const route = useRoute();
 
 const tasks = ref(null);
 const checkInNum = ref(0);

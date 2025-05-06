@@ -2,6 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
   devtools: { enabled: true },
+  modules: ['@nuxt/image-edge'],
   app: {
     baseURL: process.env.NODE_ENV === "production" ? "/hex2025-EduTrack/" : "/",
     buildAssetsDir: "/static/",
