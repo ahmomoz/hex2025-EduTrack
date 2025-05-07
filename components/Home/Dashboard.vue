@@ -63,7 +63,7 @@ onMounted(() => fetchData());
                 class="card-header py-3 d-flex flex-row align-items-center justify-content-between"
               >
                 <h6 class="m-0 font-weight-bold text-primary">
-                  每日任務完成數量
+                  每日任務完成累積數量
                 </h6>
               </div>
               <!-- Card Body -->
