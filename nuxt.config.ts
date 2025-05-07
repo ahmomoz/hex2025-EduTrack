@@ -22,9 +22,9 @@ export default defineNuxtConfig({
           href: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css",
         },
       ],
-      viewport: "width=500, initial-scale=1",
       title: "2025 六角學院體驗營 - 每日任務打卡追蹤儀表板",
       meta: [
+        { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
         {
           name: "description",
           content: "這是一個專為 2025 六角學院體驗營學員設計的每日任務打卡追蹤儀表板，可以追蹤每日任務的打卡狀況。",
