@@ -10,15 +10,17 @@ const currentPage = ref(1);
 const pageSize = ref(10);
 const debounceTimer = ref(null);
 
-/* ----------------- 獲取資料 ----------------- */
+/* ------------------------- 獲取資料 ------------------------- */
 const data = ref(null);
 const fetchData = async () => {
   try {
-    const res = await $fetch(
-      `${process.env.API_BASE_URL}/dashboard/?page=${currentPage.value}&page_size=${pageSize.value}&search=${searchQuery.value}&sort_by=completed_count&sort_order=desc`
-    );
+    const search = searchQuery.value.trim();
 
-    data.value = useCheckinTableData(
+    const url = `${process.env.API_BASE_URL}/dashboard/?page=${currentPage.value}&page_size=${pageSize.value}&search=${search}&sort_by=completed_count&sort_order=desc`;
+
+    const res = await $fetch(url);
+
+    const processed = useCheckinTableData(
       res.avatar_url,
       res.users,
       res.stats,
@@ -27,33 +29,72 @@ const fetchData = async () => {
       res.completed_count,
       "2025-05-01"
     );
-    console.log(res);
+
+    const storedKeyword = localStorage.getItem("searchKeyword")?.toLowerCase();
+
+    // 檢查目前資料中是否已有包含該關鍵字的使用者（僅檢查 global_name）
+    const alreadyExists = processed.processedUsers.some((user) =>
+      user.global_name?.toLowerCase().includes(storedKeyword)
+    );
+
+    // 若：
+    //    - 有儲存的關鍵字
+    //    - 且目前為第一頁
+    if (storedKeyword && currentPage.value === 1) {
+      // 額外發送請求：僅查詢該關鍵字的使用者資料（最多 1 筆）
+      const userSearchRes = await $fetch(
+        `${process.env.API_BASE_URL}/dashboard/?page=1&page_size=1&search=${storedKeyword}`
+      );
+
+      // 處理回傳的單筆使用者資料
+      const userData = useCheckinTableData(
+        userSearchRes.avatar_url,
+        userSearchRes.users,
+        userSearchRes.stats,
+        userSearchRes.pagination,
+        userSearchRes.updated_at,
+        userSearchRes.completed_count,
+        "2025-05-01"
+      );
+
+      // 若成功查到該使用者 → 插入到資料最前方
+      if (userData.processedUsers.length > 0) {
+        const searchUser = userData.processedUsers[0];
+
+        // 先移除與前一次搜尋結果相同的使用者 (避免在第一頁重複而跑出兩筆資料)
+        processed.processedUsers = processed.processedUsers.filter(
+          (user) => user.author_id !== searchUser.author_id
+        );
+
+        // 再插入最前面
+        processed.processedUsers.unshift(searchUser);
+      }
+    }
+
+    data.value = processed;
   } catch (error) {
     $swal.fire({
-      position: "center",
       icon: "error",
-      title: error?.data || "發生未知錯誤，請稍後重試",
+      title: error?.data || "發生錯誤，請稍後再試",
       showConfirmButton: false,
       timer: 1500,
     });
   }
 };
 
-/* ----------------- 監聽器與生命週期 ----------------- */
-// 防抖搜尋處理（300ms）
-const debouncedSearch = () => {
-  clearTimeout(debounceTimer.value);
-  debounceTimer.value = setTimeout(() => {
-    currentPage.value = 1;
-    fetchData();
-  }, 300);
-};
+/* ---- 儲存使用者搜尋過的關鍵字，方便將常用的搜尋結果優先顯示 ---- */
+watch(searchQuery, (newQuery) => {
+  const trimmedQuery = newQuery.trim();
+  const storedKeyword = localStorage.getItem("searchKeyword") || "";
 
-onMounted(() => fetchData());
-watch([currentPage, pageSize], () => fetchData());
-watch(searchQuery, debouncedSearch);
+  if (trimmedQuery && trimmedQuery !== storedKeyword) {
+    localStorage.setItem("searchKeyword", trimmedQuery);
+  }
 
-/* ----------------- 頁碼處理 ----------------- */
+  debouncedSearch();
+});
+
+/* ------------------------- 頁碼處理 ------------------------- */
 // 算出頁碼中間 ... 函式
 const getVisiblePages = (totalPages) => {
   const pages = [];
@@ -102,6 +143,20 @@ const getVisiblePages = (totalPages) => {
 const changePage = (page) => {
   currentPage.value = page;
 };
+
+/* ----------------- 監聽器與生命週期 ----------------- */
+// 防抖搜尋處理（300ms）
+const debouncedSearch = () => {
+  clearTimeout(debounceTimer.value);
+  debounceTimer.value = setTimeout(() => {
+    currentPage.value = 1;
+    fetchData();
+  }, 300);
+};
+
+onMounted(() => fetchData());
+watch([currentPage, pageSize], () => fetchData());
+watch(searchQuery, debouncedSearch);
 </script>
 
 <template>
