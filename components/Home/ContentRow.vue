@@ -12,7 +12,7 @@ const props = defineProps({
 // 任務進度條計算
 const taskProgress = computed(() => {
   const completed = props?.stats?.css?.length ?? 0;
-  return (completed / 27).toFixed(2) * 100;
+  return ((completed / 27) * 100).toFixed(0);
 });
 </script>
 
@@ -105,7 +105,9 @@ const taskProgress = computed(() => {
         <div class="card-body">
           <div class="row no-gutters align-items-center h-100">
             <div class="col">
-              <div class="font-weight-bold text-success mb-1">查看每日任務打卡回報區</div>
+              <div class="font-weight-bold text-success mb-1">
+                查看每日任務打卡回報區
+              </div>
               <div class="fs-5 mb-0">
                 <a
                   href="https://discord.com/channels/801807326054055996/1349590197708525638"
