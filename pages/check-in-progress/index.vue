@@ -231,7 +231,7 @@ watch(searchQuery, debouncedSearch);
           >
             <thead class="table-light">
               <tr>
-                <th>使用者</th>
+                <th class="sticky-col">使用者</th>
                 <th>累積打卡天數</th>
                 <th
                   v-for="(date, index) in data?.dateList"
@@ -254,7 +254,7 @@ watch(searchQuery, debouncedSearch);
                 } in data?.processedUsers"
                 :key="author_id"
               >
-                <td>
+                <td class="sticky-col">
                   <NuxtImg
                     :src="avatar_url"
                     alt="avatar-image"
@@ -400,5 +400,16 @@ td {
   overflow: hidden;
   text-overflow: ellipsis;
   padding: 8px;
+}
+.sticky-col {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background-color: $white;
+  white-space: nowrap;
+}
+
+.table thead th.sticky-col {
+  z-index: 3;
 }
 </style>
