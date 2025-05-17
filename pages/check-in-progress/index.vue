@@ -407,6 +407,10 @@ td {
   z-index: 2;
   background-color: $white;
   white-space: nowrap;
+
+  @include mobile {
+    position: static;
+  }
 }
 
 .table thead th.sticky-col {
