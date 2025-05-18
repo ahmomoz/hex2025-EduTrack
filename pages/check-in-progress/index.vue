@@ -380,6 +380,14 @@ watch(searchQuery, debouncedSearch);
 </template>
 
 <style lang="scss" scoped>
+.table tbody tr {
+  transition: all 0.3s;
+
+  /* 表格中 hover 後整排會有底色 */
+  &:hover td {
+    background-color: #f5f5f5;
+  }
+}
 .table-responsive {
   height: 480px;
 
@@ -392,7 +400,7 @@ th {
   top: 0;
   background: #fff;
   z-index: 2;
-  box-shadow: inset 0 -1px #dee2e6;
+  border-top: 1px solid #dee2e6;
 }
 th,
 td {
@@ -400,11 +408,14 @@ td {
   overflow: hidden;
   text-overflow: ellipsis;
   padding: 8px;
+  box-shadow: inset 0 -1px #dee2e6;
 }
+
+/* 凍結左側使用者欄位 */
 .sticky-col {
   position: sticky;
   left: 0;
-  z-index: 2;
+  z-index: 3;
   background-color: $white;
   white-space: nowrap;
 
@@ -412,8 +423,13 @@ td {
     position: static;
   }
 }
-
 .table thead th.sticky-col {
-  z-index: 3;
+  z-index: 4;
+}
+
+/* 解決邊框因凍結而破版的問題 */
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
 }
 </style>
