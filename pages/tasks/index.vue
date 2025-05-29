@@ -81,7 +81,9 @@ onMounted(() => fetchTasks());
               </thead>
               <tbody v-if="tasks?.htmlAndCss">
                 <tr
-                  v-for="{ id, date, title, link } in tasks?.htmlAndCss"
+                  v-for="{ id, date, title, link } in tasks?.htmlAndCss?.sort(
+                    (a, b) => a.id - b.id
+                  )"
                   :key="id"
                 >
                   <td>{{ date }}</td>
@@ -119,7 +121,9 @@ onMounted(() => fetchTasks());
               </thead>
               <tbody v-if="tasks?.javaScript">
                 <tr
-                  v-for="{ id, date, title, link } in tasks?.javaScript"
+                  v-for="{ id, date, title, link } in tasks?.javaScript?.sort(
+                    (a, b) => a.id - b.id
+                  )"
                   :key="id"
                 >
                   <td>{{ date }}</td>
