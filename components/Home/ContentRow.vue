@@ -12,7 +12,7 @@ const props = defineProps({
 // 任務進度條計算
 const taskProgress = computed(() => {
   const completed = props?.stats?.css?.length ?? 0;
-  return ((completed / 27) * 100).toFixed(0);
+  return ((completed / 25) * 100).toFixed(0);
 });
 </script>
 
