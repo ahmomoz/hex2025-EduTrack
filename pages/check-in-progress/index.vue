@@ -1,4 +1,6 @@
 <script setup>
+import { mockApiInstance } from "~/mocks/mock-api";
+
 const { $swal } = useNuxtApp();
 
 import { useCheckinTableData } from "@/composables/useCheckinTableData";
@@ -16,9 +18,10 @@ const fetchData = async () => {
   try {
     const search = searchQuery.value.trim();
 
-    const url = `${process.env.API_BASE_URL}/dashboard/?page=${currentPage.value}&page_size=${pageSize.value}&search=${search}&sort_by=completed_count&sort_order=desc`;
+    const url = `/api/dashboard/?page=${currentPage.value}&page_size=${pageSize.value}&search=${search}&sort_by=completed_count&sort_order=desc`;
 
-    const res = await $fetch(url);
+    const response = await mockApiInstance.handleRequest(url);
+    const res = await response.json();
 
     const processed = useCheckinTableData(
       res.avatar_url,
@@ -31,42 +34,30 @@ const fetchData = async () => {
     );
 
     const storedKeyword = localStorage.getItem("searchKeyword")?.toLowerCase();
-
-    // 檢查目前資料中是否已有包含該關鍵字的使用者（僅檢查 global_name）
     const alreadyExists = processed.processedUsers.some((user) =>
       user.global_name?.toLowerCase().includes(storedKeyword)
     );
 
-    // 若：
-    //    - 有儲存的關鍵字
-    //    - 且目前為第一頁
     if (storedKeyword && currentPage.value === 1) {
-      // 額外發送請求：僅查詢該關鍵字的使用者資料（最多 1 筆）
-      const userSearchRes = await $fetch(
-        `${process.env.API_BASE_URL}/dashboard/?page=1&page_size=1&search=${storedKeyword}`
-      );
+      const keywordUrl = `/api/dashboard/?page=1&page_size=1&search=${storedKeyword}`;
+      const keywordRes = await mockApiInstance.handleRequest(keywordUrl);
+      const keywordData = await keywordRes.json();
 
-      // 處理回傳的單筆使用者資料
       const userData = useCheckinTableData(
-        userSearchRes.avatar_url,
-        userSearchRes.users,
-        userSearchRes.stats,
-        userSearchRes.pagination,
-        userSearchRes.updated_at,
-        userSearchRes.completed_count,
+        keywordData.avatar_url,
+        keywordData.users,
+        keywordData.stats,
+        keywordData.pagination,
+        keywordData.updated_at,
+        keywordData.completed_count,
         "2025-05-01"
       );
 
-      // 若成功查到該使用者 → 插入到資料最前方
       if (userData.processedUsers.length > 0) {
         const searchUser = userData.processedUsers[0];
-
-        // 先移除與前一次搜尋結果相同的使用者 (避免在第一頁重複而跑出兩筆資料)
         processed.processedUsers = processed.processedUsers.filter(
           (user) => user.author_id !== searchUser.author_id
         );
-
-        // 再插入最前面
         processed.processedUsers.unshift(searchUser);
       }
     }
@@ -81,6 +72,7 @@ const fetchData = async () => {
     });
   }
 };
+
 
 /* ---- 儲存使用者搜尋過的關鍵字，方便將常用的搜尋結果優先顯示 ---- */
 watch(searchQuery, (newQuery) => {
@@ -177,7 +169,7 @@ watch(searchQuery, debouncedSearch);
               <li><p class="m-0">*只要在該日打卡討論串留言就算打卡成功</p></li>
               <li>
                 <p class="m-0">
-                  *資料更新頻率：一個小時更新一次（最後更新時間：
+                  *資料更新頻率：本次體驗營結束，目前已暫停更新（最後更新時間：
                   {{ data?.updatedAt }}）
                 </p>
               </li>

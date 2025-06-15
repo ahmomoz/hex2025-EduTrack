@@ -1,42 +1,50 @@
 <script setup>
-const { $swal } = useNuxtApp();
+import { tasks, taskStats } from "~/data/tasks";
+import { dashboardData } from "~/data/dashboardData";
 
-const tasks = ref(null);
-const checkInNum = ref(0);
+// const { $swal } = useNuxtApp();
 
-const handleFetchError = (response) => {
-  const { message } = response?.data || {};
-  $swal.fire({
-    position: "center",
-    icon: "error",
-    title: message || "發生未知錯誤，請稍後重試",
-    showConfirmButton: false,
-    timer: 1500,
-  });
-};
+// const tasks = ref(null);
+// const checkInNum = ref(0);
 
-const fetchData = async () => {
-  try {
-    const [taskData, dashboardData] = await Promise.all([
-      $fetch("/tasks/", {
-        baseURL: process.env.API_BASE_URL,
-      }),
-      $fetch("/dashboard/", {
-        baseURL: process.env.API_BASE_URL,
-      }),
-    ]);
+const checkInNum =
+  dashboardData?.stats
+    ?.filter((item) => new Date(item.date) >= new Date("2025-05-01"))
+    ?.reduce((sum, item) => sum + item.count, 0) || 0;
 
-    tasks.value = taskData;
+// const handleFetchError = (response) => {
+//   const { message } = response?.data || {};
+//   $swal.fire({
+//     position: "center",
+//     icon: "error",
+//     title: message || "發生未知錯誤，請稍後重試",
+//     showConfirmButton: false,
+//     timer: 1500,
+//   });
+// };
 
-    // 處理 checkInNum 的統計
-    checkInNum.value = dashboardData?.stats
-      ?.filter((item) => new Date(item.date) >= new Date("2025-05-01"))
-      ?.reduce((sum, item) => sum + item.count, 0) || 0;
-  } catch (error) {
-    handleFetchError(error.response || {});
-  }
-};
-onMounted(() => fetchData());
+// const fetchData = async () => {
+//   try {
+//     const [taskData, dashboardData] = await Promise.all([
+//       $fetch("/tasks/", {
+//         baseURL: process.env.API_BASE_URL,
+//       }),
+//       $fetch("/dashboard/", {
+//         baseURL: process.env.API_BASE_URL,
+//       }),
+//     ]);
+
+//     tasks.value = taskData;
+
+//     // 處理 checkInNum 的統計
+//     checkInNum.value = dashboardData?.stats
+//       ?.filter((item) => new Date(item.date) >= new Date("2025-05-01"))
+//       ?.reduce((sum, item) => sum + item.count, 0) || 0;
+//   } catch (error) {
+//     handleFetchError(error.response || {});
+//   }
+// };
+// onMounted(() => fetchData());
 </script>
 
 <template>
@@ -51,7 +59,11 @@ onMounted(() => fetchData());
         </div>
 
         <!-- Content Row -->
-        <HomeContentRow v-if="tasks?.stats" :stats="tasks?.stats" :checkInNum="checkInNum" />
+        <HomeContentRow
+          v-if="taskStats"
+          :stats="taskStats"
+          :checkInNum="checkInNum"
+        />
         <!-- Content Row -->
 
         <div class="row">
@@ -69,10 +81,7 @@ onMounted(() => fetchData());
               <!-- Card Body -->
               <div class="card-body">
                 <div class="chart-area">
-                  <ChartCheckinLineChart
-                    v-if="tasks?.stats"
-                    :stats="tasks?.stats"
-                  />
+                  <ChartCheckinLineChart v-if="taskStats" :stats="taskStats" />
                 </div>
               </div>
             </div>
@@ -105,17 +114,13 @@ onMounted(() => fetchData());
                     </span>
                     <a
                       :href="
-                        tasks?.formatted_tasks?.htmlAndCss[
-                          tasks?.formatted_tasks.htmlAndCss.length - 1
-                        ].link
+                        tasks?.htmlAndCss[tasks.htmlAndCss.length - 1].link
                       "
                       target="_blank"
                       class="fs-5 text-decoration-none slide-right-hover"
                     >
                       {{
-                        tasks?.formatted_tasks?.htmlAndCss[
-                          tasks?.formatted_tasks?.htmlAndCss.length - 1
-                        ].title
+                        tasks?.htmlAndCss[tasks?.htmlAndCss.length - 1].title
                       }}
                     </a>
                   </li>
@@ -126,17 +131,13 @@ onMounted(() => fetchData());
                     </span>
                     <a
                       :href="
-                        tasks?.formatted_tasks?.javaScript[
-                          tasks?.formatted_tasks?.javaScript.length - 1
-                        ].link
+                        tasks?.javaScript[tasks?.javaScript.length - 1].link
                       "
                       target="_blank"
                       class="fs-5 text-decoration-none slide-right-hover"
                     >
                       {{
-                        tasks?.formatted_tasks?.javaScript[
-                          tasks?.formatted_tasks?.javaScript.length - 1
-                        ].title
+                        tasks?.javaScript[tasks?.javaScript.length - 1].title
                       }}
                     </a>
                   </li>

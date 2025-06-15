@@ -1,26 +1,26 @@
 <script setup>
-const { $swal } = useNuxtApp();
+import { tasks } from '~/data/tasks';
+// const { $swal } = useNuxtApp();
 
-const tasks = ref(null);
-
-const fetchTasks = async () => {
-  try {
-    const res = await $fetch("/tasks/", {
-      baseURL: process.env.API_BASE_URL,
-    });
-    tasks.value = res?.formatted_tasks;
-  } catch (error) {
-    const { message } = error?.response?.data || {};
-    $swal.fire({
-      position: "center",
-      icon: "error",
-      title: message || "發生未知錯誤，請稍後重試",
-      showConfirmButton: false,
-      timer: 1500,
-    });
-  }
-};
-onMounted(() => fetchTasks());
+// const tasks = ref(null);
+// const fetchTasks = async () => {
+//   try {
+//     const res = await $fetch("/tasks/", {
+//       baseURL: process.env.API_BASE_URL,
+//     });
+//     tasks.value = res?.formatted_tasks;
+//   } catch (error) {
+//     const { message } = error?.response?.data || {};
+//     $swal.fire({
+//       position: "center",
+//       icon: "error",
+//       title: message || "發生未知錯誤，請稍後重試",
+//       showConfirmButton: false,
+//       timer: 1500,
+//     });
+//   }
+// };
+// onMounted(() => fetchTasks());
 </script>
 
 <template>
